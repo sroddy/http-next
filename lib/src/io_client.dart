@@ -48,15 +48,18 @@ class IOClient extends BaseClient {
   HttpClient _inner;
 
   @override
-  FutureOr<Response> send(Request request) async {
+  FutureOr<Response> send(
+    Request request, {
+    int retryAttempts = 0,
+    Duration delayBetweenRetries = const Duration(milliseconds: 50),
+  }) async {
     try {
       final ioRequest = await _inner.openUrl(request.method, request.url);
       final context = request.context;
 
       final bool followRedirects = context['http.io.follow_redirects'];
       final int maxRedirects = context['http.io.max_redirects'];
-      final bool persistentConnection =
-          context['http.io.persistent_connection'];
+      final bool persistentConnection = context['http.io.persistent_connection'];
 
       ioRequest
         ..followRedirects = followRedirects ?? true
@@ -68,6 +71,13 @@ class IOClient extends BaseClient {
             DelegatingStreamConsumer.typed<List<int>>(ioRequest),
           ));
       final response = await ioRequest.done;
+
+      if (response.statusCode < 200 || response.statusCode >= 400) {
+        if (retryAttempts > 0) {
+          await Future<void>.delayed(delayBetweenRetries);
+          return send(request, retryAttempts: retryAttempts - 1, delayBetweenRetries: delayBetweenRetries);
+        }
+      }
 
       final headers = <String, String>{};
       response.headers.forEach((key, values) {

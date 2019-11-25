@@ -14,4 +14,4 @@ import 'response.dart';
 ///
 /// A [Handler] may call an underlying HTTP implementation, or it may wrap
 /// another [Handler] or a [Client].
-typedef Handler = FutureOr<Response> Function(Request request);
+typedef Handler = FutureOr<Response> Function(Request request, {int retryAttempts, Duration delayBetweenRetries});

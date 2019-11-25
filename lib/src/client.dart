@@ -11,9 +11,7 @@ import 'dart:typed_data';
 import 'base_client.dart';
 import 'handler.dart';
 import 'handler_client.dart';
-import 'platform_client.dart'
-    if (dart.library.html) 'browser_client.dart'
-    if (dart.library.io) 'io_client.dart';
+import 'platform_client.dart' if (dart.library.html) 'browser_client.dart' if (dart.library.io) 'io_client.dart';
 import 'request.dart';
 import 'response.dart';
 
@@ -39,8 +37,7 @@ abstract class Client {
   /// [FutureOr<Response>]. It will be called when [Client.send] is invoked.
   ///
   /// When [Client.close] is called the [onClose] function will be called.
-  factory Client.handler(Handler handler, {void onClose()}) =>
-      HandlerClient(handler, onClose ?? () {});
+  factory Client.handler(Handler handler, {void onClose()}) => HandlerClient(handler, onClose ?? () {});
 
   /// Sends an HTTP HEAD request with the given headers to the given URL, which
   /// can be a [Uri] or a [String].
@@ -158,7 +155,7 @@ abstract class Client {
   FutureOr<Uint8List> readBytes(url, {Map<String, String> headers});
 
   /// Sends an HTTP request and asynchronously returns the response.
-  FutureOr<Response> send(Request request);
+  FutureOr<Response> send(Request request, {int retryAttempts, Duration delayBetweenRetries});
 
   /// Closes the client and cleans up any resources associated with it.
   ///

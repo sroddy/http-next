@@ -35,7 +35,7 @@ void main() {
     final client = const Pipeline()
         .addMiddleware(middlewareA)
         .addMiddleware(middlewareB)
-        .addClient(Client.handler((request) async {
+        .addClient(Client.handler((request, {int retryAttempts, Duration delayBetweenRetries}) async {
       expect(accessLocation, 2);
       accessLocation = 3;
       return Response(Uri.parse('dart:http'), 200);
@@ -70,12 +70,11 @@ void main() {
       return response;
     });
 
-    final innerPipeline =
-        const Pipeline().addMiddleware(middlewareA).addMiddleware(middlewareB);
+    final innerPipeline = const Pipeline().addMiddleware(middlewareA).addMiddleware(middlewareB);
 
     final client = const Pipeline()
         .addMiddleware(innerPipeline.middleware)
-        .addClient(Client.handler((request) async {
+        .addClient(Client.handler((request, {int retryAttempts, Duration delayBetweenRetries}) async {
       expect(accessLocation, 2);
       accessLocation = 3;
       return Response(Uri.parse('dart:http'), 200);
@@ -103,10 +102,13 @@ void main() {
     const Pipeline()
         .addMiddleware(middlewareA)
         .addMiddleware(middlewareB)
-        .addClient(Client.handler((request) async => null, onClose: () {
-          expect(accessLocation, 2);
-          accessLocation = 3;
-        }))
+        .addClient(Client.handler(
+          (request, {int retryAttempts, Duration delayBetweenRetries}) async => null,
+          onClose: () {
+            expect(accessLocation, 2);
+            accessLocation = 3;
+          },
+        ))
         .close();
 
     expect(accessLocation, 3);

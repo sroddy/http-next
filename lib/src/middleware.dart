@@ -64,7 +64,7 @@ Middleware createMiddleware({
   responseHandler ??= _defaultResponseHandler;
 
   return (inner) => HandlerClient(
-        (request) async {
+        (request, {int retryAttempts, Duration delayBetweenRetries}) async {
           try {
             final req = await requestHandler(request);
             final res = await inner.send(req);
@@ -76,6 +76,7 @@ Middleware createMiddleware({
             } else {
               rethrow;
             }
+            return null;
           }
         },
         onClose == null

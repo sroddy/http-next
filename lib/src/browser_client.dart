@@ -44,7 +44,10 @@ class BrowserClient extends BaseClient {
   final _xhrs = Set<html.HttpRequest>();
 
   @override
-  FutureOr<Response> send(Request request) async {
+  FutureOr<Response> send(Request request, {
+    int retryAttempts = 0,
+    Duration delayBetweenRetries = const Duration(milliseconds: 50),
+  }) async {
     final bytes = await collectBytes(request.read());
     final xhr = html.HttpRequest();
     _xhrs.add(xhr);
