@@ -23,7 +23,10 @@ class HandlerClient extends BaseClient {
   final void Function() _close;
 
   @override
-  FutureOr<Response> send(Request request) => _handler(request);
+  FutureOr<Response> send(Request request, {
+    int retryAttempts = 0,
+    Duration delayBetweenRetries = const Duration(milliseconds: 50),
+  }) => _handler(request, retryAttempts: retryAttempts, delayBetweenRetries: delayBetweenRetries);
 
   @override
   void close() {

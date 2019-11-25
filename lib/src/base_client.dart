@@ -22,12 +22,10 @@ import 'utils.dart';
 /// get various convenience methods for free.
 abstract class BaseClient implements Client {
   @override
-  FutureOr<Response> head(url, {Map<String, String> headers}) =>
-      send(Request.head(url, headers: headers));
+  FutureOr<Response> head(url, {Map<String, String> headers}) => send(Request.head(url, headers: headers));
 
   @override
-  FutureOr<Response> get(url, {Map<String, String> headers}) =>
-      send(Request.get(url, headers: headers));
+  FutureOr<Response> get(url, {Map<String, String> headers}) => send(Request.get(url, headers: headers));
 
   @override
   FutureOr<Response> post(
@@ -57,8 +55,7 @@ abstract class BaseClient implements Client {
       send(Request.patch(url, body, headers: headers, encoding: encoding));
 
   @override
-  FutureOr<Response> delete(url, {Map<String, String> headers}) =>
-      send(Request.delete(url, headers: headers));
+  FutureOr<Response> delete(url, {Map<String, String> headers}) => send(Request.delete(url, headers: headers));
 
   @override
   FutureOr<String> read(url, {Map<String, String> headers}) async {
@@ -77,7 +74,7 @@ abstract class BaseClient implements Client {
   }
 
   @override
-  FutureOr<Response> send(Request request);
+  FutureOr<Response> send(Request request, {int retryAttempts, Duration delayBetweenRetries});
 
   @override
   void close() {}
